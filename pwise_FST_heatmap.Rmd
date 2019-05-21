@@ -12,28 +12,26 @@ library(ggplot2)
 #pwise_dat = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/molten_pairwise_FST.csv",fileEncoding="UTF-8-BOM")
 ```
 
-<!-- #Format/Plot -->
-<!-- ```{r} -->
-<!-- pwise_dat$Table_order_B = as.factor(pwise_dat$Table_order_B) -->
-<!-- pwise_dat$Table_order_A = as.factor(pwise_dat$Table_order_A) -->
+#Format/Plot
+```{r}
+pwise_dat$Table_order_B = as.factor(pwise_dat$Table_order_B)
+pwise_dat$Table_order_A = as.factor(pwise_dat$Table_order_A)
+levels(pwise_dat$Lake_A)
+levels(pwise_dat$Table_order_A)
+lake_names = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/axis_names_heat_map.csv",fileEncoding="UTF-8-BOM")
+ unique(lake_names$Pop) 
 
-<!-- levels(pwise_dat$Lake_A) -->
-<!-- levels(pwise_dat$Table_order_A) -->
-
-<!-- lake_names = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/axis_names_heat_map.csv",fileEncoding="UTF-8-BOM") -->
-<!-- unique(lake_names$Pop) -->
-
-<!-- pdf("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/pwise_FST_heatmap.pdf") -->
-<!-- ggplot(data = pwise_dat, aes(x=Table_order_A, y=Table_order_B, fill=pwise_FST)) + -->
-<!--   geom_tile()+ -->
-<!--   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = -0.001))+ -->
-<!--   xlim(levels(pwise_dat$Table_order_B))+ -->
-<!--   ylim(levels(pwise_dat$Table_order_A))+ -->
-<!--   scale_fill_gradientn(colors = c("#333333","#6699cc","#ffcc00","#ff6600","#ff3300"), name="FST")+ -->
-<!--   scale_x_discrete(labels=unique(lake_names$Pop))+ -->
-<!--   scale_y_discrete(labels=unique(lake_names$Pop)) -->
-<!-- dev.off() -->
-<!-- ``` -->
+ pdf("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/pwise_FST_heatmap.pdf") 
+ ggplot(data = pwise_dat, aes(x=Table_order_A, y=Table_order_B, fill=pwise_FST)) + 
+   geom_tile()+ 
+   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = -0.001))+ 
+   xlim(levels(pwise_dat$Table_order_B))+ 
+   ylim(levels(pwise_dat$Table_order_A))+ 
+   scale_fill_gradientn(colors = c("#333333","#6699cc","#ffcc00","#ff6600","#ff3300"), name="FST")+ 
+   scale_x_discrete(labels=unique(lake_names$Pop))+ 
+   scale_y_discrete(labels=unique(lake_names$Pop)) 
+ dev.off() 
+``` 
 
 
 
@@ -42,39 +40,39 @@ library(ggplot2)
 
 
 
-<!-- #Test Melt -->
-<!-- ```{r} -->
-<!-- library(reshape2) -->
-<!-- test_melt_dat = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/pairwise_fst_matrix_2melt.csv",fileEncoding="UTF-8-BOM") -->
-<!-- post_melt_dat = melt(test_melt_dat) -->
+ #Test Melt 
+```{r} 
+ library(reshape2) 
+ test_melt_dat = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/pairwise_fst_matrix_2melt.csv",fileEncoding="UTF-8-BOM") 
+ post_melt_dat = melt(test_melt_dat) 
 
-<!-- names(post_melt_dat) = c("Lake_A","Lake_B","pwise_FST") -->
-<!-- post_melt_dat$pwise_FST = as.numeric(post_melt_dat$pwise_FST) -->
-<!-- #write out and add the XY coordinates in excel with a vlookup -->
-<!-- write.csv(post_melt_dat,"I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/ALL_pops_pairwise_fst_melted.csv") -->
-<!-- ``` -->
-<!-- #Read XY formatted data -->
-<!-- ```{r} -->
-<!-- (post_melt_dat = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/ALL_pops_pairwise_fst_melted.csv", fileEncoding="UTF-8-BOM")) -->
-<!-- post_melt_dat[which(post_melt_dat$pwise_FST <0),"pwise_FST"] = 0.00000999 -->
-<!-- # post_melt_dat = post_melt_dat[-which(is.na(post_melt_dat$pwise_FST)),] -->
-<!-- #post_melt_dat$X = as.integer(post_melt_dat$X) -->
-<!-- #post_melt_dat$Y = as.integer(post_melt_dat$Y) -->
-<!-- post_melt_dat[which(post_melt_dat$Lake_A == "Wolf River"),] -->
-<!-- ``` -->
-<!-- #arlequin (genepop) order doesn't match my table order, this block makes the data in a format to get plot matching order -->
-<!-- ```{r} -->
-<!-- test_post_melt_format = post_melt_dat -->
-<!-- #this variable is a loop controll that keeps the cell we're assigning above the diagonal -->
-<!-- diag_control = 1 -->
-<!-- for (i in 1:n_distinct(test_post_melt_format$Lake_A)-1) { -->
-<!--   for (j in diag_control:n_distinct(test_post_melt_format$Lake_A)) { -->
-<!--     test_post_melt_format[which(test_post_melt_format$X == i & test_post_melt_format$Y == j),"pwise_FST"] = test_post_melt_format[which(test_post_melt_format$X == j & test_post_melt_format$Y == i),"pwise_FST"] -->
-<!--   } -->
-<!--   diag_control = diag_control + 1 -->
-<!-- } -->
-<!-- write.csv(test_post_melt_format,"I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/give_new_XY_fst_pwise.csv") -->
-<!-- ``` -->
+ names(post_melt_dat) = c("Lake_A","Lake_B","pwise_FST") 
+ post_melt_dat$pwise_FST = as.numeric(post_melt_dat$pwise_FST) 
+ #write out and add the XY coordinates in excel with a vlookup 
+ write.csv(post_melt_dat,"I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/ALL_pops_pairwise_fst_melted.csv") 
+``` 
+ #Read XY formatted data 
+```{r} 
+ (post_melt_dat = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/ALL_pops_pairwise_fst_melted.csv", fileEncoding="UTF-8-BOM")) 
+ post_melt_dat[which(post_melt_dat$pwise_FST <0),"pwise_FST"] = 0.00000999 
+ # post_melt_dat = post_melt_dat[-which(is.na(post_melt_dat$pwise_FST)),] 
+ #post_melt_dat$X = as.integer(post_melt_dat$X) 
+ #post_melt_dat$Y = as.integer(post_melt_dat$Y) 
+ post_melt_dat[which(post_melt_dat$Lake_A == "Wolf River"),] 
+ ``` 
+ #arlequin (genepop) order doesn't match my table order, this block makes the data in a format to get plot matching order 
+ ```{r} 
+ test_post_melt_format = post_melt_dat 
+ #this variable is a loop controll that keeps the cell we're assigning above the diagonal 
+ diag_control = 1 
+ for (i in 1:n_distinct(test_post_melt_format$Lake_A)-1) { 
+   for (j in diag_control:n_distinct(test_post_melt_format$Lake_A)) { 
+     test_post_melt_format[which(test_post_melt_format$X == i & test_post_melt_format$Y == j),"pwise_FST"] = test_post_melt_format[which(test_post_melt_format$X == j & test_post_melt_format$Y == i),"pwise_FST"] 
+   } 
+   diag_control = diag_control + 1 
+ } 
+ write.csv(test_post_melt_format,"I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/give_new_XY_fst_pwise.csv") 
+``` 
 #to replot RUN FROM HERE
 #read data
 ```{r}
