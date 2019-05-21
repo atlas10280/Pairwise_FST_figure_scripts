@@ -1,0 +1,142 @@
+---
+title: "pwise_FST_heatmap"
+author: "Matthew Bootsma"
+date: "April 22, 2019"
+output: html_document
+---
+This script was used to build the pairwise FST heatmap of ALL populations
+#Dependecies
+```{r}
+library(dplyr)
+library(ggplot2)
+#pwise_dat = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/molten_pairwise_FST.csv",fileEncoding="UTF-8-BOM")
+```
+
+<!-- #Format/Plot -->
+<!-- ```{r} -->
+<!-- pwise_dat$Table_order_B = as.factor(pwise_dat$Table_order_B) -->
+<!-- pwise_dat$Table_order_A = as.factor(pwise_dat$Table_order_A) -->
+
+<!-- levels(pwise_dat$Lake_A) -->
+<!-- levels(pwise_dat$Table_order_A) -->
+
+<!-- lake_names = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/axis_names_heat_map.csv",fileEncoding="UTF-8-BOM") -->
+<!-- unique(lake_names$Pop) -->
+
+<!-- pdf("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/pwise_FST_heatmap.pdf") -->
+<!-- ggplot(data = pwise_dat, aes(x=Table_order_A, y=Table_order_B, fill=pwise_FST)) + -->
+<!--   geom_tile()+ -->
+<!--   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = -0.001))+ -->
+<!--   xlim(levels(pwise_dat$Table_order_B))+ -->
+<!--   ylim(levels(pwise_dat$Table_order_A))+ -->
+<!--   scale_fill_gradientn(colors = c("#333333","#6699cc","#ffcc00","#ff6600","#ff3300"), name="FST")+ -->
+<!--   scale_x_discrete(labels=unique(lake_names$Pop))+ -->
+<!--   scale_y_discrete(labels=unique(lake_names$Pop)) -->
+<!-- dev.off() -->
+<!-- ``` -->
+
+
+
+
+
+
+
+
+<!-- #Test Melt -->
+<!-- ```{r} -->
+<!-- library(reshape2) -->
+<!-- test_melt_dat = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/pairwise_fst_matrix_2melt.csv",fileEncoding="UTF-8-BOM") -->
+<!-- post_melt_dat = melt(test_melt_dat) -->
+
+<!-- names(post_melt_dat) = c("Lake_A","Lake_B","pwise_FST") -->
+<!-- post_melt_dat$pwise_FST = as.numeric(post_melt_dat$pwise_FST) -->
+<!-- #write out and add the XY coordinates in excel with a vlookup -->
+<!-- write.csv(post_melt_dat,"I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/ALL_pops_pairwise_fst_melted.csv") -->
+<!-- ``` -->
+<!-- #Read XY formatted data -->
+<!-- ```{r} -->
+<!-- (post_melt_dat = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/ALL_pops_pairwise_fst_melted.csv", fileEncoding="UTF-8-BOM")) -->
+<!-- post_melt_dat[which(post_melt_dat$pwise_FST <0),"pwise_FST"] = 0.00000999 -->
+<!-- # post_melt_dat = post_melt_dat[-which(is.na(post_melt_dat$pwise_FST)),] -->
+<!-- #post_melt_dat$X = as.integer(post_melt_dat$X) -->
+<!-- #post_melt_dat$Y = as.integer(post_melt_dat$Y) -->
+<!-- post_melt_dat[which(post_melt_dat$Lake_A == "Wolf River"),] -->
+<!-- ``` -->
+<!-- #arlequin (genepop) order doesn't match my table order, this block makes the data in a format to get plot matching order -->
+<!-- ```{r} -->
+<!-- test_post_melt_format = post_melt_dat -->
+<!-- #this variable is a loop controll that keeps the cell we're assigning above the diagonal -->
+<!-- diag_control = 1 -->
+<!-- for (i in 1:n_distinct(test_post_melt_format$Lake_A)-1) { -->
+<!--   for (j in diag_control:n_distinct(test_post_melt_format$Lake_A)) { -->
+<!--     test_post_melt_format[which(test_post_melt_format$X == i & test_post_melt_format$Y == j),"pwise_FST"] = test_post_melt_format[which(test_post_melt_format$X == j & test_post_melt_format$Y == i),"pwise_FST"] -->
+<!--   } -->
+<!--   diag_control = diag_control + 1 -->
+<!-- } -->
+<!-- write.csv(test_post_melt_format,"I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/give_new_XY_fst_pwise.csv") -->
+<!-- ``` -->
+#to replot RUN FROM HERE
+#read data
+```{r}
+formatted_post_melt = read.csv("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/give_new_XY_fst_pwise.csv", fileEncoding="UTF-8-BOM" )
+diag_control = 2
+for (i in 1:22) {
+  for (j in diag_control:23) {
+    formatted_post_melt[which(formatted_post_melt$X == i & formatted_post_melt$Y == j),"pwise_FST"] = NA
+  }
+  diag_control = diag_control + 1
+}
+```
+
+#plot data 
+```{r}
+pdf("I:/WAE_RAD_Data/STACKS_publish/phase2-pop_Gen/Arlequin/ALL_pops/ALL_pops_pairwise_fst.pdf", width = 11, height = 11)
+ggplot(formatted_post_melt, aes(x = X, y = Y, fill=pwise_FST))+
+  geom_tile(colour="white",size=0.25)+
+  scale_fill_gradientn(colors = c("#333333","#6699cc","#ffcc00","#ff6600","#ff3300"), name="FST")+
+  # scale_fill_gradientn(colors = c("#000000","#00B0F0","#548235","#00ffcc"), name="FST")+
+  scale_y_continuous(
+    name = NULL,
+    expand = c(0,0),
+    breaks=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23),
+    labels=c('Delavan Lake','Wolf River',
+             'Lake Wisconsin','Medicine Lake','Willow Flowage',
+             'Kawaguesaga','Big Arbor Vitae','Escanaba Lake',
+             'Sanford Lake','Manitowish Lake','Turtle Flambeau',
+             'Chippewa Flowage','Eau Claire River','Lake Millicent',
+             'St. Louis River','Pike River','Sarah Lake',
+             'Lake Koronis','Mille Lacs','Pine River',
+             'Cutfoot Sioux','Ottertail Lake','Red Lake')
+  )+
+  scale_x_continuous(
+    name = NULL,
+    expand = c(0,0),
+    # breaks=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23),
+    breaks=c(0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,22.5),
+    labels=c('Delavan Lake','Wolf River',
+             'Lake Wisconsin','Medicine Lake','Willow Flowage',
+             'Kawaguesaga','Big Arbor Vitae','Escanaba Lake',
+             'Sanford Lake','Manitowish Lake','Turtle Flambeau',
+             'Chippewa Flowage','Eau Claire River','Lake Millicent',
+             'St. Louis River','Pike River','Sarah Lake',
+             'Lake Koronis','Mille Lacs','Pine River',
+             'Cutfoot Sioux','Ottertail Lake','Red Lake')
+  )+
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 28),
+    # axis.title = element_text(size = 22),
+    axis.text.x = element_text(angle = 90, hjust = 1, size = 16),
+    axis.text.y = element_text(size = 16),
+    axis.ticks.x=element_blank(),
+    axis.ticks.y=element_blank(),
+    panel.background = element_blank(),
+    # panel.grid.major = element_blank(),
+    # panel.grid.minor = element_blank(),
+    # axis.line = element_line(colour = "#666666"),
+    # panel.border = element_rect(colour = "#666666", fill=NA, size=1),
+  )+
+  ggtitle("Pairwise FST Heatmap")
+dev.off()
+```
+
+
